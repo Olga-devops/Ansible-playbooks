@@ -1,0 +1,48 @@
+---
+- name: Installing Apache to remote  system
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Installing multiple packages
+      package:
+        name: "{{item}}"
+        state: present
+      with_items:
+        - wget
+        - vim
+        - httpd
+        - mariadb
+        - mariadb-server
+        - php
+        - php-mysql
+        - php-pdo
+        - php-gd
+        - php-mbstring
+        - unzip
+
+    - name: Extacting the zip file to remote system
+      unarchive:
+        src: ./Power-Free-Website-Template-Free-CSS.com.zip
+        dest: /var/www/
+
+
+    - name: Copying files to main folder on remote system
+      copy:
+        remote_src: yes
+        src: /var/www/templatemo_508_power/
+        dest: /var/www/html/
+        owner: apache
+        group: apache
+
+    - name: String Apache daemon 
+      systemd:
+        name: httpd
+        state: restarted
+        enabled: yes
+
+    - name: Starting Mariadb
+      systemd:
+        name: httpd
+        state: restarted
+        enabled: yes
